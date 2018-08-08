@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html ng-app="QETestApp">
+
+<head>
+    <meta charset="utf-8" />
+    <title>QE TEST</title>
+    <link href="bootstrap.min.css" rel="stylesheet" />
+    <link href="app.css" rel="stylesheet" />
+
+    <script src="jquery-3.3.1.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="angular.min.js"></script>
+    <script src="QETest.js"></script>
+</head>
+
+<body>
+    <div ng-controller="QETestController as QETest">
+        <h2 class="h2">Calculator</h2>
+        <div class="row form-group">
+            <div class="col-md-1 col-form-label">
+                <label class="float-right">Input </label>
+            </div>
+            <div class="col-md-2">
+                <input class="form-control" placeholder="Please enter input ..." ng-model="QETest.txtInput" ng-change="QETest.Calculator()"
+                />
+            </div>
+            <div class="col-md-1 col-form-label">
+                <label class="float-right"> Output </label>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-light form-control">
+                    {{QETest.txtOutput|number:2}}
+                </button>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Operator</th>
+                    <th>Value</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in QETest.List">
+                    <td>{{item.index}}</td>
+                    <td>{{item.operator}}</td>
+                    <td>{{item.value}}</td>
+                    <td>
+                        <button class="btn btn-light" ng-click="QETest.BeginEdit(item.index)" data-toggle="modal" data-target="#ModalAdd">
+                            <svg id="i-compose" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2">
+                                <path d="M27 15 L27 30 2 30 2 5 17 5 M30 6 L26 2 9 19 7 25 13 23 Z M22 6 L26 10 Z M9 19 L13 23 Z" />
+                            </svg>
+                        </button>
+                        <button class="btn btn-light"ng-click="QETest.BeginDelete(item.index)" data-toggle="modal" data-target="#ModalDelete" >
+                            <svg id="i-trash" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2">
+                                <path d="M28 6 L6 6 8 30 24 30 26 6 4 6 M16 12 L16 24 M21 12 L20 24 M11 12 L12 24 M12 6 L13 2 19 2 20 6" />
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="col-md-1">
+            <input type="button" class="btn btn-success form-control" value="Add" ng-click="QETest.BeginAdd()" data-toggle="modal" data-target="#ModalAdd" />
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="ModalAdd" tabindex="-1" role="dialog" aria-labelledby="ModalAdd" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ModalAdd">Add Operator + Value</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                        <div class="modal-body">
+                                <div class="row form-group">
+                                    <div class="col-form-label col-md-3">
+                                        <label>Index</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input ng-model="QETest.txtIndex" />
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                        <div class="col-form-label col-md-3">
+                                            <label>Operator</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input ng-model="QETest.txtOperator" />
+                                        </div>
+                                </div>
+                                <div class="row form-group">
+                                        <div class="col-form-label col-md-3">
+                                            <label>Value</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input ng-model="QETest.txtValue" />
+                                        </div>
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" data-dismiss="modal" ng-click="QETest.Add(QETest.Index)" >Save changes</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="ModalDelete" tabindex="-1" role="dialog" aria-labelledby="ModalDelete" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ModalDelete">{{QETest.Confirm}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="QETest.Delete(QETest.Index)">Yes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+    <script>
+        data = {};
+        $("#save").on("click", function(e){
+            e.preventDefault();
+            data.select = $("#exampleSelect").value();
+            $(this).prev().click();
+        });
+    </script>
+</body>
+
+</html>
